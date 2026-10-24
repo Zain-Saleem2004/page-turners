@@ -1,4 +1,4 @@
-"""Load the goodbooks-10k CSV files from the local data/ folder."""
+# Load the goodbooks CSV files from the local folder.
 from pathlib import Path
 import pandas as pd
 
