@@ -3,17 +3,6 @@ from pathlib import Path
 import pandas as pd
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
-REQUIRED_COLUMNS = {
-    "books.csv": {
-        "book_id", "goodreads_book_id", "authors", "title",
-        "original_publication_year", "average_rating", "ratings_count",
-        "work_ratings_count", "ratings_1", "ratings_2", "ratings_3",
-        "ratings_4", "ratings_5",
-    },
-    "ratings.csv": {"user_id", "book_id", "rating"},
-    "tags.csv": {"tag_id", "tag_name"},
-    "book_tags.csv": {"goodreads_book_id", "tag_id", "count"},
-}
 
 def _read_csv(filename: str, data_dir: Path = DATA_DIR, dtype: dict | None = None) -> pd.DataFrame:
     """Read one dataset CSV and check that it is usable.
@@ -44,9 +33,6 @@ def _read_csv(filename: str, data_dir: Path = DATA_DIR, dtype: dict | None = Non
     if df.empty:
         raise ValueError(f"{path} contains a header but no rows.")
 
-    missing = REQUIRED_COLUMNS[filename] - set(df.columns)
-    if missing:
-        raise ValueError(f"{filename} is missing columns: {sorted(missing)}")
     return df
 
 
@@ -76,3 +62,10 @@ def load_book_tags(data_dir: Path = DATA_DIR) -> pd.DataFrame:
     Links to books through ``goodreads_book_id``, not ``book_id``.
     """
     return _read_csv("book_tags.csv", data_dir)
+
+def load_to_read(data_dir: Path = DATA_DIR) -> pd.DataFrame:
+    """Load how many users applied each tag to each book.
+
+    Links to books through ``goodreads_book_id``, not ``book_id``.
+    """
+    return _read_csv("to_read.csv", data_dir)
