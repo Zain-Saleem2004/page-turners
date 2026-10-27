@@ -1,7 +1,5 @@
 """Clean the raw goodbooks-10k tables."""
-
 import pandas as pd
-
 
 def normalize_language(codes: pd.Series) -> pd.Series:
     """Merge English variants into 'eng' and label missing codes 'unknown'.
