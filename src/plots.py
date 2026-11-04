@@ -25,10 +25,10 @@ def plot_popularity_vs_rating(books: pd.DataFrame) -> plt.Figure:
     return fig
 
 
-def plot_rating_by_era(books: pd.DataFrame) -> plt.Figure:
+def plot_rating_by_era(books: pd.DataFrame, show_outliers: bool = False) -> plt.Figure:
     """Box plot of book average ratings for each publication era."""
     fig, ax = plt.subplots(figsize=(8, 4.5))
-    sns.boxplot(data=books, x="era", y="average_rating", ax=ax, showfliers=False)
+    sns.boxplot(data=books, x="era", y="average_rating", ax=ax, showfliers=show_outliers)
     ax.set_xlabel("Era")
     ax.set_ylabel("Average rating")
     ax.set_xlabel("Era of first publication")
@@ -36,7 +36,7 @@ def plot_rating_by_era(books: pd.DataFrame) -> plt.Figure:
     ax.set_title("Do older books get different ratings?")
     return fig
 
-def plot_rating_by_genre(genre_books: pd.DataFrame) -> plt.Figure:
+def plot_rating_by_genre(genre_books: pd.DataFrame, show_outliers: bool = False) -> plt.Figure:
     """Horizontal box plot of book average ratings per genre."""
     order = (
         genre_books.groupby("genre")["average_rating"]
@@ -46,7 +46,7 @@ def plot_rating_by_genre(genre_books: pd.DataFrame) -> plt.Figure:
     )
     fig, ax = plt.subplots(figsize=(8, 9))
     sns.boxplot(data=genre_books, x="average_rating", y="genre",
-                order=order, ax=ax, showfliers=False)
+                order=order, ax=ax, showfliers=show_outliers)
     ax.set_xlabel("Average rating of the book")
     ax.set_ylabel("")
     ax.set_title("How are books rated in each genre?")
