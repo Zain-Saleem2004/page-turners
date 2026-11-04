@@ -28,10 +28,26 @@ def plot_popularity_vs_rating(books: pd.DataFrame) -> plt.Figure:
 def plot_rating_by_era(books: pd.DataFrame) -> plt.Figure:
     """Box plot of book average ratings for each publication era."""
     fig, ax = plt.subplots(figsize=(8, 4.5))
-    sns.boxplot(data=books, x="era", y="average_rating", ax=ax, outliers=False)
+    sns.boxplot(data=books, x="era", y="average_rating", ax=ax, showfliers=False)
     ax.set_xlabel("Era")
     ax.set_ylabel("Average rating")
     ax.set_xlabel("Era of first publication")
     ax.set_ylabel("Average rating")
     ax.set_title("Do older books get different ratings?")
+    return fig
+
+def plot_rating_by_genre(genre_books: pd.DataFrame) -> plt.Figure:
+    """Horizontal box plot of book average ratings per genre."""
+    order = (
+        genre_books.groupby("genre")["average_rating"]
+        .median()
+        .sort_values(ascending=False)
+        .index
+    )
+    fig, ax = plt.subplots(figsize=(8, 9))
+    sns.boxplot(data=genre_books, x="average_rating", y="genre",
+                order=order, ax=ax, showfliers=False)
+    ax.set_xlabel("Average rating of the book")
+    ax.set_ylabel("")
+    ax.set_title("How are books rated in each genre?")
     return fig
