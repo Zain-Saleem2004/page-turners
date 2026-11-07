@@ -1,11 +1,11 @@
 """Streamlit app: what makes a book loved by readers?"""
 import matplotlib.pyplot as plt
 import streamlit as st
-from src.analysis import (assign_era, popularity_rating_correlation, rating_distribution, summarize_by_group)
+from src.analysis import (assign_era, popularity_rating_correlation, rating_distribution, summarize_by_group, author_trends)
 from src.cleaning import clean_books
 from src.genres import books_by_genre, build_book_genres
 from src.loading import load_book_tags, load_books, load_tags
-from src.plots import (plot_popularity_vs_rating, plot_rating_by_era, plot_rating_by_genre, plot_rating_distribution)
+from src.plots import (plot_popularity_vs_rating, plot_rating_by_era, plot_rating_by_genre, plot_rating_distribution, plot_author_trend_distribution, plot_author_timeline)
 
 st.set_page_config(page_title="Page Turners", layout="wide")
 
@@ -21,6 +21,12 @@ def get_genre_books(min_count: int):
     books, book_tags, tags = get_data()
     book_genres = build_book_genres(books, book_tags, tags, min_count=min_count)
     return books_by_genre(books, book_genres)
+
+@st.cache_data
+def get_author_trends(min_books: int):
+    """Return the rating trend of every author with enough books."""
+    books, _, _ = get_data()
+    return author_trends(books, min_books=min_books)
 
 def show(fig) -> None:
     """Display a matplotlib figure and free its memory."""
@@ -40,7 +46,7 @@ st.sidebar.header("Options")
 show_outliers = st.sidebar.checkbox("Show outliers in box plots", value=False)
 min_count = st.sidebar.slider("Minimum tag count for a genre", 20, 200, 50, step=10)
 
-overview_tab, era_tab, genre_tab = st.tabs(["Overview", "Eras", "Genres"])
+overview_tab, era_tab, genre_tab, author_tab = st.tabs(["Overview", "Eras", "Genres", "Authors"])
 
 with overview_tab:
     left, right = st.columns(2)
@@ -67,3 +73,22 @@ with genre_tab:
     show(plot_rating_by_genre(genre_books, show_outliers=show_outliers))
     summary = summarize_by_group(genre_books, "genre")
     st.dataframe(summary.sort_values("mean_rating", ascending=False).round(3))
+
+with author_tab:
+    min_books = st.slider("Minimum number of books per author", 5, 20, 8)
+    trends = get_author_trends(min_books)
+    median_slope = trends["slope_per_decade"].median()
+    share_declining = (trends["slope_per_decade"] < 0).mean()
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Authors analysed", len(trends))
+    col2.metric("Median change per decade", f"{median_slope:+.3f} stars")
+    col3.metric("Authors with declining ratings", f"{share_declining:.0%}")
+    show(plot_author_trend_distribution(trends))
+    st.caption("Authors named Anonymous or Unknown are excluded. Each author's "
+               "trend is a straight line fitted to few books, so individual "
+               "values are noisy.")
+    author = st.selectbox(
+        "Look at one author",
+        trends.sort_values("n_books", ascending=False).index,
+    )
+    show(plot_author_timeline(books, author))
