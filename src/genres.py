@@ -2,14 +2,39 @@ import pandas as pd
 
 # Tags that describe what a book is. Variants of one genre share a label.
 GENRES = {
-    "fantasy": ["fantasy", "urban-fantasy", "magic", "sci-fi-fantasy", "fantasy-sci-fi"],
+    "fantasy": [
+        "fantasy",
+        "urban-fantasy",
+        "magic",
+        "sci-fi-fantasy",
+        "fantasy-sci-fi",
+    ],
     "young-adult": ["young-adult", "ya", "ya-fiction", "teen"],
-    "childrens": ["childrens", "children", "children-s", "children-s-books", "childrens-books", "kids", "middle-grade"],
+    "childrens": [
+        "childrens",
+        "children",
+        "children-s",
+        "children-s-books",
+        "childrens-books",
+        "kids",
+        "middle-grade",
+    ],
     "classics": ["classics", "classic"],
-    "romance": ["romance", "contemporary-romance", "historical-romance", "paranormal-romance"],
+    "romance": [
+        "romance",
+        "contemporary-romance",
+        "historical-romance",
+        "paranormal-romance",
+    ],
     "mystery": ["mystery", "mysteries", "crime", "mystery-thriller"],
     "thriller": ["thriller", "suspense"],
-    "science-fiction": ["science-fiction", "sci-fi", "scifi", "sci-fi-fantasy", "fantasy-sci-fi"],
+    "science-fiction": [
+        "science-fiction",
+        "sci-fi",
+        "scifi",
+        "sci-fi-fantasy",
+        "fantasy-sci-fi",
+    ],
     "dystopian": ["dystopian", "dystopia"],
     "historical-fiction": ["historical-fiction", "historical"],
     "paranormal": ["paranormal", "supernatural"],
@@ -40,9 +65,12 @@ TAG_GENRE_PAIRS = pd.DataFrame(
 MIN_TAG_COUNT = 50
 
 
-def build_book_genres(books: pd.DataFrame, book_tags: pd.DataFrame,
-                      tags: pd.DataFrame,
-                      min_count: int = MIN_TAG_COUNT) -> pd.DataFrame:
+def build_book_genres(
+    books: pd.DataFrame,
+    book_tags: pd.DataFrame,
+    tags: pd.DataFrame,
+    min_count: int = MIN_TAG_COUNT,
+) -> pd.DataFrame:
     """Return one row (book_id, genre) for every genre of every book.
 
     Args:
@@ -58,8 +86,11 @@ def build_book_genres(books: pd.DataFrame, book_tags: pd.DataFrame,
     genre_rows = (
         book_tags[book_tags["count"] >= min_count]
         .merge(tag_genre, on="tag_id")
-        .merge(books[["book_id", "goodreads_book_id"]],
-               on="goodreads_book_id", validate="many_to_one")
+        .merge(
+            books[["book_id", "goodreads_book_id"]],
+            on="goodreads_book_id",
+            validate="many_to_one",
+        )
     )
     return genre_rows[["book_id", "genre"]].drop_duplicates().reset_index(drop=True)
 

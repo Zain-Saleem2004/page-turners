@@ -4,12 +4,14 @@ import pandas as pd
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
-def _read_csv(filename: str, data_dir: Path = DATA_DIR, dtype: dict | None = None) -> pd.DataFrame:
+
+def _read_csv(
+    filename: str, data_dir: Path = DATA_DIR, dtype: dict | None = None
+) -> pd.DataFrame:
     """Read one dataset CSV and check that it is usable.
 
     Args:
-        filename: Name of the file inside ``data_dir``; must be a key of
-            ``REQUIRED_COLUMNS``.
+        filename: Name of the file inside;
         data_dir: Folder containing the dataset files.
         dtype: Optional column types passed to ``pandas.read_csv``.
 
@@ -62,10 +64,3 @@ def load_book_tags(data_dir: Path = DATA_DIR) -> pd.DataFrame:
     Links to books through ``goodreads_book_id``, not ``book_id``.
     """
     return _read_csv("book_tags.csv", data_dir)
-
-def load_to_read(data_dir: Path = DATA_DIR) -> pd.DataFrame:
-    """Load how many users applied each tag to each book.
-
-    Links to books through ``goodreads_book_id``, not ``book_id``.
-    """
-    return _read_csv("to_read.csv", data_dir)
